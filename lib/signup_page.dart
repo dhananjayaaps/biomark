@@ -29,27 +29,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController _dobController = TextEditingController();
-
-  @override
-  void dispose() {
-    _dobController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        _dobController.text = DateFormat('yyyy-MM-dd').format(picked);
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,22 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
-              TextField(
-                controller: _dobController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.calendar_today, color: Colors.purple),
-                  hintText: 'DOB',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-                onTap: () => _selectDate(context),
-              ),
+
               SizedBox(height: 16),
               TextField(
                 obscureText: true,
