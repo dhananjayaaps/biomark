@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: '/signup',
+      initialRoute: '/login',
       routes: {
         '/': (context) => HomePage(toggleTheme),
         '/settings': (context) => SettingsPage(toggleTheme, isDarkMode),
@@ -77,7 +77,6 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => HomePage(toggleTheme),
         '/otpvalidate': (context) => OTPValidationPage(),
         '/securityquiz': (context) => SecurityQuestionsSetupPage(),
-        // '/settings': (context) => SettingsPage(),
       },
     );
   }

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Login extends StatelessWidget {
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +20,120 @@ class Login extends StatelessWidget {
         primaryColor: Colors.purple,
       ),
       themeMode: ThemeMode.system,
-      home: LoginPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => WelcomePage(),
+        '/login': (context) => LoginPage(),
+        '/signup': (context) => SignUpPage(),
+        '/home': (context) => HomePage(),
+      },
+    );
+  }
+}
+
+class WelcomePage extends StatefulWidget {
+  @override
+  _WelcomePageState createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    super.initState();
+    _checkLoggedIn();
+  }
+
+  // Check if the user is already logged in
+  Future<void> _checkLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final email = prefs.getString('email');
+    if (email != null && email.isNotEmpty) {
+      // User is logged in, navigate to the home page
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 50),
+              Text(
+                'Welcome to Our App',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
+                height: 200,
+                child: Image.asset(
+                  'assets/images/welcome_image.png', // Replace with your image path
+                  fit: BoxFit.contain,
+                ),
+              ),
+              SizedBox(height: 20),
+              // Button to go to login page
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'LOGIN',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              // Button to go to sign up page
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    'SIGN UP',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -58,10 +175,8 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 202) {
         final data = json.decode(response.body);
-        print(data);
-        print(email);
-        print(data['name']);
         final user = data['user'];
+
         // Store the user's name and email in SharedPreferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('id', user['id']);
@@ -69,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('email', email);
 
         // Navigate to the home page
-        Navigator.pushNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/home');
       } else {
         final data = json.decode(response.body);
         setState(() {
@@ -78,7 +193,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       setState(() {
-        print(error);
         _errorMessage = 'Failed to connect to the server: $error';
       });
     } finally {
@@ -196,6 +310,27 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SignUpPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Implement your sign-up screen here
+    return Scaffold(
+      appBar: AppBar(title: Text('Sign Up')),
+      body: Center(child: Text('Sign Up Page')),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Home')),
+      body: Center(child: Text('Welcome Home!')),
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'database_helper.dart'; // Import the database helper
+import 'database_helper.dart';
 
 class Signup extends StatelessWidget {
   @override
@@ -79,13 +79,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> _saveUserToDatabase(String name, String email) async {
-    // Prepare the user data to save in the SQLite database
     Map<String, dynamic> user = {
       'name': name,
       'email': email,
     };
 
-    // Insert into SQLite database
     await DatabaseHelper.instance.insertUser(user);
   }
 

@@ -1,10 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String name = 'Loading...';
+  String email = 'Loading...';
+  bool isDarkMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  // Method to load the user's name and email from SharedPreferences
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name') ?? 'No Name';
+      email = prefs.getString('email') ?? 'No Email';
+      isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get the current theme mode (light or dark)
-    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -15,7 +41,7 @@ class HomePage extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            // Drawer header
+            // Drawer header with user profile info
             DrawerHeader(
               decoration: BoxDecoration(
                 color: isDarkMode ? Colors.grey[800] : Colors.purple,
@@ -25,18 +51,18 @@ class HomePage extends StatelessWidget {
                 children: [
                   const CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage('assets/images/profile.png'),
+                    backgroundImage: AssetImage('assets/images/profile.jpg'),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Sineth Dhananjaya',
+                    name,
                     style: TextStyle(
                       color: isDarkMode ? Colors.white : Colors.white70,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    'your.email@example.com',
+                    email,
                     style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.white54),
                   ),
                 ],
@@ -47,7 +73,7 @@ class HomePage extends StatelessWidget {
               leading: Icon(Icons.person, color: isDarkMode ? Colors.white : Colors.purple),
               title: Text('Profile', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
               onTap: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushNamed(context, '/profile');
               },
             ),
             // Settings Button
@@ -62,8 +88,9 @@ class HomePage extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.logout, color: isDarkMode ? Colors.white : Colors.purple),
               title: Text('Logout', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
-              onTap: () {
-                // Add logout logic here
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.clear(); // Clear SharedPreferences
                 Navigator.pushReplacementNamed(context, '/');
               },
             ),
