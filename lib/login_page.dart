@@ -56,6 +56,8 @@ class _LoginPageState extends State<LoginPage> {
         body: json.encode({'email': email, 'password': password}),
       );
 
+      print(response.body);
+
       if (response.statusCode == 202) {
         final data = json.decode(response.body);
         final user = data['user'];
