@@ -15,8 +15,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Map<String, dynamic>? userDetails;
   bool isLoading = true;
-  String name = 'Loading...';
-  String email = 'Loading...';
+  late final String name;
+  late final String email;
   bool isDarkMode = false;
   String token = "";
 
@@ -315,14 +315,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'User Name', // Replace with actual user name
+                    name,
                     style: TextStyle(
                       color: isDarkMode ? Colors.white : Colors.white70,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    'user@example.com', // Replace with actual user email
+                    email,
                     style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.white54),
                   ),
                 ],

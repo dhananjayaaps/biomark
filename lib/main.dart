@@ -7,6 +7,7 @@ import 'otp_validate_page.dart';
 import 'securityquiz_page.dart';
 import 'settings_page.dart';
 import 'welcome.dart';
+import 'forget_password.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: '/securityquiz',
+      initialRoute: '/changePassword',
       routes: {
         '/': (context) => WelcomePage(),
         '/settings': (context) => SettingsPage(),
@@ -44,6 +45,7 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => HomePage(toggleTheme),
         '/otpvalidate': (context) => OTPValidationPage(),
         '/securityquiz': (context) => SecurityQuestionsSetupPage(),
+        '/changePassword': (context) => ChangePasswordPage(),
       },
     );
   }

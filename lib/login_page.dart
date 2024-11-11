@@ -66,13 +66,10 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('email', email);
         await prefs.setString('token', user['token']);
 
-        print(user['name']);
-        print(user['email']);
         final token = prefs.getString('token');
         print(token);
 
-        // Navigate to the home page
-        Navigator.pushNamed(context, '/home');
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       } else {
         final data = json.decode(response.body);
         setState(() {
@@ -147,6 +144,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
+              // make a link for forget password
+              Align(
+                alignment: Alignment.centerRight,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/changePassword'); // Navigate to Forgot Password page
+                  },
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 14
+                    ),
+                  ),
+                ),
+              ),
+
               SizedBox(height: 20),
               if (_errorMessage.isNotEmpty)
                 Text(
