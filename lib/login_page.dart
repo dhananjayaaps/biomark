@@ -68,7 +68,8 @@ class _LoginPageState extends State<LoginPage> {
 
         print(user['name']);
         print(user['email']);
-        print(user['token']);
+        final token = prefs.getString('token');
+        print(token);
 
         // Navigate to the home page
         Navigator.pushNamed(context, '/home');

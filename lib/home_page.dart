@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    print("initState");
     super.initState();
     fetchUserDetails();
     _loadUserData();
@@ -39,14 +40,19 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> fetchUserDetails() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
       final response = await http.get(Uri.parse('http://192.168.56.1:4000/details'),
           headers: {
+            'Content-Type': 'application/json',
             'Cookie': 'token=$token',
           }
       );
+      print(response.body);
       if (response.statusCode == 200) {
         setState(() {
           userDetails = jsonDecode(response.body)['userDetails'];
+          print(userDetails);
           isLoading = false;
         });
       } else {
@@ -64,6 +70,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> deleteUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     try {
       final response = await http.delete(Uri.parse('http://192.168.56.1:4000/details'),
           headers: {
@@ -80,7 +88,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> createUserDetails(Map<String, dynamic> details) async {
-    print(name + email + token);
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
     try {
       final response = await http.post(
         Uri.parse('http://192.168.56.1:4000/details/'),
@@ -90,7 +99,8 @@ class _HomePageState extends State<HomePage> {
         },
         body: jsonEncode(details),
       );
-      if (response.statusCode == 200) {
+      print(response.statusCode);
+      if (response.statusCode == 201) {
         fetchUserDetails();
       }
       print(jsonEncode(details));
@@ -101,12 +111,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> updateUserDetails(Map<String, dynamic> details) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    print(token);
     try {
       final response = await http.put(
-        Uri.parse('http://192.168.56.1:4000/api/user/details'),
-        headers: {'Content-Type': 'application/json'},
+        Uri.parse('http://192.168.56.1:4000/details'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': 'token=$token',
+        },
         body: jsonEncode(details),
       );
+      print(response);
       if (response.statusCode == 200) {
         fetchUserDetails();
       }
@@ -127,12 +144,14 @@ class _HomePageState extends State<HomePage> {
     String sex = 'Male';
 
     if (existingDetails != null) {
-      dobController.text = existingDetails['dateOfBirth'] ?? '';
+      dobController.text = (existingDetails['dateOfBirth'] != null)
+          ? DateTime.parse(existingDetails['dateOfBirth']).toLocal().toString().split(' ')[0]
+          : '';
       birthTimeController.text = existingDetails['timeOfBirth'] ?? '';
       locationController.text = existingDetails['locationOfBirth'] ?? '';
       bloodGroup = existingDetails['bloodGroup'] ?? 'A+';
       sex = existingDetails['sex'] ?? 'Male';
-      heightController.text = existingDetails['height'] ?? '';
+      heightController.text = (existingDetails['height'] ?? '').toString();
       ethnicityController.text = existingDetails['ethnicity'] ?? '';
       eyeColorController.text = existingDetails['eyeColor'] ?? '';
     }
@@ -265,6 +284,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String getValueOrPlaceholder(dynamic value) {
+    return value != null ? value.toString() : "N/A";
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -292,14 +315,14 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    name,
+                    'User Name', // Replace with actual user name
                     style: TextStyle(
                       color: isDarkMode ? Colors.white : Colors.white70,
                       fontSize: 18,
                     ),
                   ),
                   Text(
-                    email,
+                    'user@example.com', // Replace with actual user email
                     style: TextStyle(color: isDarkMode ? Colors.white70 : Colors.white54),
                   ),
                 ],
@@ -341,15 +364,52 @@ class _HomePageState extends State<HomePage> {
             ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('User Details Found'),
-            Text('Date of Birth: ${userDetails!['dateOfBirth']}'),
-            Text('Time of Birth: ${userDetails!['timeOfBirth']}'),
-            Text('Location of Birth: ${userDetails!['locationOfBirth']}'),
-            Text('Blood Group: ${userDetails!['bloodGroup']}'),
-            Text('Sex: ${userDetails!['sex']}'),
-            Text('Height: ${userDetails!['height']} cm'),
-            Text('Ethnicity: ${userDetails!['ethnicity']}'),
-            Text('Eye Color: ${userDetails!['eyeColor']}'),
+            Text(
+              'User Details',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            DataTable(
+              columns: [
+                DataColumn(label: Text('Field')),
+                DataColumn(label: Text('Value')),
+              ],
+              rows: [
+                DataRow(cells: [
+                  DataCell(Text('Date of Birth')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['dateOfBirth']).substring(0, 10))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Time of Birth')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['timeOfBirth']))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Location of Birth')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['locationOfBirth']))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Blood Group')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['bloodGroup']))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Sex')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['sex']))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Height')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['height']) + " cm")),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Ethnicity')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['ethnicity']))),
+                ]),
+                DataRow(cells: [
+                  DataCell(Text('Eye Color')),
+                  DataCell(Text(getValueOrPlaceholder(userDetails!['eyeColor']))),
+                ]),
+              ],
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => showCreateOrUpdateForm(existingDetails: userDetails),
               child: Text('Update Details'),
