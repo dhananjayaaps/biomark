@@ -21,7 +21,7 @@ class _WelcomePageState extends State<WelcomePage> {
     final token = prefs.getString('token');
     if (token != null && token.isNotEmpty) {
       // User is logged in, navigate to the home page
-      Navigator.pushReplacementNamed(context, '/home');
+      // Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
