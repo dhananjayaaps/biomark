@@ -58,15 +58,17 @@ class _LoginPageState extends State<LoginPage> {
 
       if (response.statusCode == 202) {
         final data = json.decode(response.body);
-        print(data);
-        print(email);
-        print(data['name']);
         final user = data['user'];
-        // Store the user's name and email in SharedPreferences
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('id', user['id']);
         await prefs.setString('name', user['name']);
         await prefs.setString('email', email);
+        await prefs.setString('token', user['token']);
+
+        print(user['name']);
+        print(user['email']);
+        print(user['token']);
 
         // Navigate to the home page
         Navigator.pushNamed(context, '/home');
