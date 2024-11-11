@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      initialRoute: '/changePassword',
+      initialRoute: '/',
       routes: {
         '/': (context) => WelcomePage(),
         '/settings': (context) => SettingsPage(),

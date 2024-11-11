@@ -63,7 +63,7 @@ class _SecurityQuestionsSetupPageState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Security questions saved successfully!')),
           );
-          // Navigator.pushNamed(context, '/home');
+          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Failed to save security questions.')),

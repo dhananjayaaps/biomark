@@ -18,10 +18,9 @@ class _WelcomePageState extends State<WelcomePage> {
   // Check if the user is already logged in
   Future<void> _checkLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
+    final token = prefs.getString('email');
     if (token != null && token.isNotEmpty) {
-      // User is logged in, navigate to the home page
-      // Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 

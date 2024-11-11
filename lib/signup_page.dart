@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'database_helper.dart';
 
@@ -57,19 +58,40 @@ class _SignUpPageState extends State<SignUpPage> {
       );
 
       if (response.statusCode == 201) {
-        // Save to SQLite
         await _saveUserToDatabase(name, email);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sign up successful! Please check your email.')),
+          SnackBar(content: Text('Sign up successful!')),
         );
-        Navigator.pushNamed(context, '/login');
-      } else {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      try {
+        final data = json.decode(response.body);
+        print(data); // Debugging step to see the full decoded response
+
+        // Check if 'token' key exists in the decoded JSON
+        if (data != null && data.containsKey('token')) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', data['token']);
+
+          Navigator.pushNamedAndRemoveUntil(context, '/securityquiz', (route) => false);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Sign up failed: Token not found in response.')),
+          );
+        }
+      } catch (e) {
+        // Catch any JSON decoding errors and print the exception
+        print("Error decoding response: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(responseData['message'] ?? 'Sign up failed')),
+          SnackBar(content: Text('An error occurred during sign up.')),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign up failed: ${response.reasonPhrase}')),
+      );
+    }
+
     } catch (error) {
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(
